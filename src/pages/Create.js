@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
-import { Button, ButtonGroup, Container, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Button, ButtonGroup, Container, FormControlLabel, makeStyles, RadioGroup, TextField, Typography } from '@material-ui/core'
 import AcUnitOutlinedIcon  from '@material-ui/icons/AcUnitOutlined'
 import SendIcon from '@material-ui/icons/Send'
 import KeyboardArrowRightIcon  from '@material-ui/icons/KeyboardArrowRight'
+import { Radio } from '@material-ui/core'
+import { FormControl } from '@material-ui/core'
+import { FormLabel } from '@material-ui/core'
+import { useHistory } from 'react-router-dom'
 
 const useStyles=makeStyles({
   // btn:{
@@ -34,11 +38,12 @@ export default function Create() {
 
 
   const classes =useStyles()
-
+  const history =useHistory()
   const [title,setTitle]=useState('')
   const [details, setDetails] = useState('')
   const [titleError,setTitleError]=useState(false)
   const [detailsError, setDetailsError] = useState(false)
+  const [category,setCategory]=useState('todos')
 
   const handleSubmit =(e)=>{
     e.preventDefault() //default action of a form being submitted is refresh the page so prevent default is used
@@ -53,7 +58,12 @@ export default function Create() {
     }
     
     if (title && details){
-      console.log(title,details)
+      fetch('http://localhost:8000/notes',{
+        method:'POST',
+        headers:{"Content-type":"application/json"},
+        body:JSON.stringify({title,details,category})
+      }).then(()=>history.push('/'))
+      console.log(title,details,category)
     }
 
   }
@@ -159,6 +169,45 @@ export default function Create() {
      required
      error={detailsError}
      />
+
+    <FormControl className={classes.field}
+    //this is wrapper which encloses radio with form label
+    
+    >
+
+    
+    <FormLabel>Note Category</FormLabel>
+     <RadioGroup // this allows to group radio buttons such that only one can be selected
+     // if multiple use checkbox
+     value={category}
+     onChange={(e)=>setCategory(e.target.value)}
+     >
+       
+    <FormControlLabel // To Provide label this is used
+    value="money" 
+    control={<Radio />} 
+    label="Money"
+    />
+    <FormControlLabel 
+    value="todos" 
+    control={<Radio />} 
+    label="Todos"
+    />
+    <FormControlLabel 
+    value="reminders" 
+    control={<Radio />} 
+    label="Reminders"
+    />
+    <FormControlLabel 
+    value="work" 
+    control={<Radio />} 
+    label="Work"
+    />
+     </RadioGroup>
+
+     </FormControl>
+     
+
 
 <Button 
     //  className={classes.btn}
